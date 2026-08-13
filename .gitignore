@@ -37,4 +37,4 @@ build/
 
 ### Mac OS ###
 .DS_Store.idea/
-/Identity/dependency-reduced-pom.xml
+/identity/dependency-reduced-pom.xml

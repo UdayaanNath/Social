@@ -1,0 +1,281 @@
+openapi: 3.0.3
+info:
+  title: Identity API
+  description: API for managing users in the Social application
+  version: 1.0.0
+  contact:
+    name: Social API Support
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /users:
+    post:
+      summary: Create a new user
+      description: Creates a new user with the provided username and email
+      operationId: createUser
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      summary: List all users
+      description: Retrieves a list of all users
+      operationId: getAllUsers
+      tags:
+        - users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieves a user by their unique identifier
+      operationId: getUserById
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update an existing user
+      description: Updates a user's information by their unique identifier
+      operationId: updateUser
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a user
+      description: Deletes a user by their unique identifier
+      operationId: deleteUser
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    User:
+      type: object
+      description: Represents a user in the system
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the user
+          readOnly: true
+          example: 1
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          minLength: 1
+          maxLength: 100
+          example: john.doe@example.com
+      required:
+        - id
+        - username
+        - email
+
+    CreateUserRequest:
+      type: object
+      description: Request body for creating a new user
+      properties:
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          minLength: 1
+          maxLength: 100
+          example: john.doe@example.com
+      required:
+        - username
+        - email
+
+    UpdateUserRequest:
+      type: object
+      description: Request body for updating an existing user
+      properties:
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          minLength: 1
+          maxLength: 100
+          example: john.doe@example.com
+      required:
+        - username
+        - email
+
+    Error:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Error code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: Invalid input provided
+      required:
+        - code
+        - message
+
+    SuccessResponse:
+      type: object
+      description: Success response
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: User deleted successfully
+      required:
+        - message

@@ -6,6 +6,8 @@ import com.google.inject.Singleton;
 import org.hibernate.SessionFactory;
 import org.nath.sns.dao.UserDAO;
 import org.nath.sns.resource.AppHealthResource;
+import org.nath.sns.resource.UsersResource;
+import org.nath.sns.service.UserService;
 
 public class IdentityModule extends AbstractModule {
 
@@ -24,6 +26,8 @@ public class IdentityModule extends AbstractModule {
         bind(SessionFactory.class).toInstance(sessionFactory);
 
         bind(AppHealthResource.class).in(Singleton.class);
+        bind(UserService.class).in(Singleton.class);
+        bind(UsersResource.class).in(Singleton.class);
     }
 
     @Provides

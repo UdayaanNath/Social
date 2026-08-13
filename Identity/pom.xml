@@ -9,9 +9,9 @@
   </parent>
 
   <groupId>org.nath.sns</groupId>
-  <artifactId>Identity</artifactId>
+  <artifactId>identity</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Identity</name>
+  <name>identity</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
@@ -20,6 +20,17 @@
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nath.sns</groupId>
+      <artifactId>identity-api-spec</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Swagger annotations for generated OpenAPI classes -->
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>1.6.14</version>
     </dependency>
   </dependencies>
 
@@ -55,6 +66,86 @@
                   <mainClass>org.nath.sns.IdentityService</mainClass>
                 </transformer>
               </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <id>unpack-identity-api-spec</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.nath.sns</groupId>
+                  <artifactId>identity-api-spec</artifactId>
+                  <version>${project.version}</version>
+                  <includes>api.yaml</includes>
+                  <outputDirectory>
+                    ${project.build.directory}/dependency/internal
+                  </outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>7.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <!-- Path to your YAML spec -->
+              <inputSpec>${project.build.directory}/dependency/internal/api.yaml</inputSpec>
+
+              <!-- jaxrs-spec generates pure JAX-RS interfaces -->
+              <generatorName>jaxrs-spec</generatorName>
+
+              <!-- Where the generated code will live -->
+              <apiPackage>org.nath.sns.identity</apiPackage>
+              <modelPackage>org.nath.sns.identity.model</modelPackage>
+
+              <configOptions>
+                <!-- Generates interfaces instead of full server stubs -->
+                <interfaceOnly>true</interfaceOnly>
+                <generatePom>false</generatePom>
+                <!-- Set to true for Dropwizard 3.x+ (Jakarta), false for Dropwizard 2.x (Javax) -->
+                <useJakartaEe>true</useJakartaEe>
+                <useTags>true</useTags>
+                <!-- Disable Swagger annotations generation -->
+                <generateSwaggerAnnotations>false</generateSwaggerAnnotations>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/gen/java</source>
+              </sources>
             </configuration>
           </execution>
         </executions>

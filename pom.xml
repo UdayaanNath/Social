@@ -13,10 +13,12 @@
     <guice.version>7.0.0</guice.version>
     <guice-bridge.version>3.0.5</guice-bridge.version>
     <jersey-hk2.version>3.1.5</jersey-hk2.version>
+    <swagger-annotations-version>2.2.20</swagger-annotations-version>
   </properties>
   <modules>
     <module>common</module>
-    <module>Identity</module>
+    <module>identity-api-spec</module>
+    <module>identity</module>
   </modules>
   <dependencies>
     <dependency>
@@ -38,19 +40,27 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>${guice.version}</version> <!-- Guice 7 is required for Jakarta EE / Dropwizard 4 -->
+      <version>${guice.version}</version>
+      <!-- Guice 7 is required for Jakarta EE / Dropwizard 4 -->
     </dependency>
-
     <!-- Jersey HK2 Guice Bridge -->
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
       <artifactId>jersey-hk2</artifactId>
-      <version>${jersey-hk2.version}</version> <!-- Should match Dropwizard 4's Jersey version -->
+      <version>${jersey-hk2.version}</version>
+      <!-- Should match Dropwizard 4's Jersey version -->
     </dependency>
     <dependency>
       <groupId>org.glassfish.hk2</groupId>
       <artifactId>guice-bridge</artifactId>
-      <version>${guice-bridge.version}</version> <!-- Should match Dropwizard 4's HK2 version -->
+      <version>${guice-bridge.version}</version>
+      <!-- Should match Dropwizard 4's HK2 version -->
+    </dependency>
+    <!-- Swagger Annotations -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger-annotations-version}</version>
     </dependency>
   </dependencies>
 </project>

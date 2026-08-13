@@ -10,7 +10,9 @@ import org.nath.sns.config.IdentityConfig;
 import org.nath.sns.config.IdentityModule;
 import org.nath.sns.entity.User;
 import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.hibernate.UnitOfWorkApplicationListener;
 import org.nath.sns.resource.AppHealthResource;
+import org.nath.sns.resource.UsersResource;
 
 public class IdentityService extends Application<IdentityConfig>
 {
@@ -37,6 +39,10 @@ public class IdentityService extends Application<IdentityConfig>
                 new IdentityModule(configuration, hibernateBundle.getSessionFactory())
         );
 
+        // Register UnitOfWork listener for Hibernate session management
+        environment.jersey().register(new UnitOfWorkApplicationListener());
+
         environment.jersey().register(injector.getInstance(AppHealthResource.class));
+        environment.jersey().register(injector.getInstance(UsersResource.class));
     }
 }

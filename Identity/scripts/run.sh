@@ -13,4 +13,4 @@ cd "$IDENTITY_DIR"
 mvn clean package -DskipTests
 
 # Run the Identity service
-java -jar target/Identity-1.0-SNAPSHOT.jar server config/base.conf
+java -jar target/identity-1.0-SNAPSHOT.jar server config/base.conf
