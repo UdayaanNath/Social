@@ -9,6 +9,10 @@
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <dropwizard.version>4.0.0</dropwizard.version>
+    <postgresql.version>42.7.3</postgresql.version>
+    <guice.version>7.0.0</guice.version>
+    <guice-bridge.version>3.0.5</guice-bridge.version>
+    <jersey-hk2.version>3.1.5</jersey-hk2.version>
   </properties>
   <modules>
     <module>common</module>
@@ -19,6 +23,34 @@
       <groupId>io.dropwizard</groupId>
       <artifactId>dropwizard-core</artifactId>
       <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-hibernate</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+    </dependency>
+    <!-- Google Guice -->
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${guice.version}</version> <!-- Guice 7 is required for Jakarta EE / Dropwizard 4 -->
+    </dependency>
+
+    <!-- Jersey HK2 Guice Bridge -->
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey-hk2.version}</version> <!-- Should match Dropwizard 4's Jersey version -->
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>guice-bridge</artifactId>
+      <version>${guice-bridge.version}</version> <!-- Should match Dropwizard 4's HK2 version -->
     </dependency>
   </dependencies>
 </project>
