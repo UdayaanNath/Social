@@ -24,6 +24,14 @@ public class UserRoleDAO extends AbstractDAO<UserRoleEntity> {
     }
 
     @UnitOfWork
+    public List<String> findRoleNamesByUserId(Long userId) {
+        return currentSession().createNativeQuery(
+                        "SELECT role_name FROM user_roles WHERE user_id = :userId", String.class)
+                .setParameter("userId", userId)
+                .getResultList();
+    }
+
+    @UnitOfWork
     public List<UserRoleEntity> findAll(Long userId, String username, Long roleId, String roleName) {
         StringBuilder hql = new StringBuilder("FROM UserRoleEntity WHERE 1 = 1");
         if (userId != null) hql.append(" AND userId = :userId");

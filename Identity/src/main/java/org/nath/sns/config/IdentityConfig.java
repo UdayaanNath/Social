@@ -12,6 +12,9 @@ public class IdentityConfig extends Configuration {
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
 
+    @JsonProperty("jwt")
+    private JwtConfig jwt = new JwtConfig();
+
     @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {
         return database;
@@ -20,5 +23,9 @@ public class IdentityConfig extends Configuration {
     @JsonProperty("database")
     public void setDataSourceFactory(DataSourceFactory factory) {
         this.database = factory;
+    }
+
+    public JwtConfig getJwtConfig() {
+        return jwt;
     }
 }

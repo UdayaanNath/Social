@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.nath.sns.entity.UserEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UserDAO extends AbstractDAO<UserEntity> {
 
@@ -21,6 +22,14 @@ public class UserDAO extends AbstractDAO<UserEntity> {
     @UnitOfWork
     public UserEntity findById(Long id) {
         return (UserEntity) get(id);
+    }
+
+    @UnitOfWork
+    public Optional<UserEntity> findByUsername(String username) {
+        return currentSession()
+                .createQuery("FROM UserEntity u WHERE u.username = :username", UserEntity.class)
+                .setParameter("username", username)
+                .uniqueResultOptional();
     }
 
     @UnitOfWork

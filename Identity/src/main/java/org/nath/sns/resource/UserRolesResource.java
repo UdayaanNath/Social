@@ -1,6 +1,7 @@
 package org.nath.sns.resource;
 
 import io.dropwizard.hibernate.UnitOfWork;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.NotFoundException;
@@ -26,6 +27,7 @@ public class UserRolesResource implements UserRolesApi {
 
     @Override
     @UnitOfWork
+    @RolesAllowed("ADMIN")
     public UserRole createUserRole(CreateUserRoleRequest request) {
         try {
             return userRoleService.createUserRole(request);
@@ -36,6 +38,7 @@ public class UserRolesResource implements UserRolesApi {
 
     @Override
     @UnitOfWork
+    @RolesAllowed("ADMIN")
     public SuccessResponse deleteUserRole(Long id) {
         try {
             return userRoleService.deleteUserRole(id);
@@ -48,6 +51,7 @@ public class UserRolesResource implements UserRolesApi {
 
     @Override
     @UnitOfWork
+    @RolesAllowed("ADMIN")
     public List<UserRole> getAllUserRoles(Long userId, String username, Long roleId, String roleName) {
         try {
             return userRoleService.getAllUserRoles(userId, username, roleId, roleName);
@@ -58,6 +62,7 @@ public class UserRolesResource implements UserRolesApi {
 
     @Override
     @UnitOfWork
+    @RolesAllowed("ADMIN")
     public UserRole getUserRoleById(Long id) {
         try {
             return userRoleService.getUserRoleById(id);
@@ -70,6 +75,7 @@ public class UserRolesResource implements UserRolesApi {
 
     @Override
     @UnitOfWork
+    @RolesAllowed("ADMIN")
     public UserRole updateUserRole(Long id, UpdateUserRoleRequest request) {
         try {
             return userRoleService.updateUserRole(id, request);

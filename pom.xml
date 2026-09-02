@@ -16,6 +16,7 @@
     <swagger-annotations-version>2.2.20</swagger-annotations-version>
     <java-jwt-version>4.4.0</java-jwt-version>
     <bcrypt-version>0.4</bcrypt-version>
+    <bcpkix-jdk18on-version>1.78.1</bcpkix-jdk18on-version>
   </properties>
   <modules>
     <module>common</module>
@@ -43,11 +44,18 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
     </dependency>
-    <!-- Java JWT -->
+    <!-- Auth0 Java JWT (Single Dependency) -->
     <dependency>
       <groupId>com.auth0</groupId>
       <artifactId>java-jwt</artifactId>
-      <version>${java-jwt-version}</version>
+      <version>4.4.0</version>
+    </dependency>
+
+    <!-- BouncyCastle for reading PEM RSA Key files -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bcpkix-jdk18on-version}</version>
     </dependency>
     <!-- BCrypt -->
     <dependency>
