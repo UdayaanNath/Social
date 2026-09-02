@@ -27,7 +27,7 @@ public class UserDAO extends AbstractDAO<UserEntity> {
     @SuppressWarnings("unchecked")
     public List<UserEntity> findAll() {
         return (List<UserEntity>) currentSession()
-                .createQuery("FROM org.nath.sns.entity.UserEntity", UserEntity.class)
+                .createQuery("FROM UserEntity", UserEntity.class)
                 .list();
     }
 

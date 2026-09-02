@@ -30,7 +30,7 @@ public class UserService {
     public User createUser(CreateUserRequest createUserRequest) {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(createUserRequest.getUsername());
-        // Generate a random salt and hash the plaintext password (log_rounds = 12 recommended)
+        // Generate a random salt and hash the plaintext password
         String salt = BCrypt.gensalt(12);
         String hashedPassword = BCrypt.hashpw(createUserRequest.getPassword(), salt);
         userEntity.setPasswordHash(hashedPassword);

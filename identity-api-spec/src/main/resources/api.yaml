@@ -486,9 +486,12 @@ components:
           example: admin
         status:
           $ref: '#/components/schemas/UserRoleStatus'
+          default: ACTIVE
       required:
         - userId
+        - username
         - roleId
+        - roleName
 
     UpdateUserRoleRequest:
       type: object

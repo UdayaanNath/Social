@@ -9,15 +9,17 @@ import io.dropwizard.db.DataSourceFactory;
 import org.nath.sns.config.IdentityConfig;
 import org.nath.sns.config.IdentityModule;
 import org.nath.sns.entity.UserEntity;
+import org.nath.sns.entity.UserRoleEntity;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkApplicationListener;
 import org.nath.sns.resource.AppHealthResource;
 import org.nath.sns.resource.UsersResource;
+import org.nath.sns.resource.UserRolesResource;
 
 public class IdentityService extends Application<IdentityConfig>
 {
     private final HibernateBundle<IdentityConfig> hibernateBundle =
-            new HibernateBundle<IdentityConfig>(UserEntity.class) {
+            new HibernateBundle<IdentityConfig>(UserEntity.class, UserRoleEntity.class) {
                 @Override
                 public DataSourceFactory getDataSourceFactory(IdentityConfig config) {
                     return config.getDataSourceFactory();
@@ -44,5 +46,6 @@ public class IdentityService extends Application<IdentityConfig>
 
         environment.jersey().register(injector.getInstance(AppHealthResource.class));
         environment.jersey().register(injector.getInstance(UsersResource.class));
+        environment.jersey().register(injector.getInstance(UserRolesResource.class));
     }
 }
