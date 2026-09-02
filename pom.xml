@@ -14,6 +14,8 @@
     <guice-bridge.version>3.0.5</guice-bridge.version>
     <jersey-hk2.version>3.1.5</jersey-hk2.version>
     <swagger-annotations-version>2.2.20</swagger-annotations-version>
+    <java-jwt-version>4.4.0</java-jwt-version>
+    <bcrypt-version>0.4</bcrypt-version>
   </properties>
   <modules>
     <module>common</module>
@@ -32,9 +34,26 @@
       <version>${dropwizard.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-auth</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
+    </dependency>
+    <!-- Java JWT -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>${java-jwt-version}</version>
+    </dependency>
+    <!-- BCrypt -->
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>${bcrypt-version}</version>
     </dependency>
     <!-- Google Guice -->
     <dependency>

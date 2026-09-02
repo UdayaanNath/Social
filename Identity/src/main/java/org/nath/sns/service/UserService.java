@@ -1,11 +1,13 @@
 package org.nath.sns.service;
 
 import org.nath.sns.dao.UserDAO;
-import org.nath.sns.entity.User;
+import org.nath.sns.entity.UserEntity;
+import org.nath.sns.identity.model.User;
 import org.nath.sns.identity.model.CreateUserRequest;
 import org.nath.sns.identity.model.SuccessResponse;
 import org.nath.sns.identity.model.UpdateUserRequest;
 
+import org.mindrot.jbcrypt.BCrypt;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -25,12 +27,16 @@ public class UserService {
      * @param createUserRequest the request containing username and email
      * @return the created user with generated ID
      */
-    public org.nath.sns.identity.model.User createUser(CreateUserRequest createUserRequest) {
-        User user = new User();
-        user.setUsername(createUserRequest.getUsername());
-        user.setEmail(createUserRequest.getEmail());
-        User createdUser = userDAO.create(user);
-        return convertToApiUser(createdUser);
+    public User createUser(CreateUserRequest createUserRequest) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(createUserRequest.getUsername());
+        // Generate a random salt and hash the plaintext password (log_rounds = 12 recommended)
+        String salt = BCrypt.gensalt(12);
+        String hashedPassword = BCrypt.hashpw(createUserRequest.getPassword(), salt);
+        userEntity.setPasswordHash(hashedPassword);
+        userEntity.setEmail(createUserRequest.getEmail());
+        UserEntity createdUserEntity = userDAO.create(userEntity);
+        return convertToApiUser(createdUserEntity);
     }
 
     /**
@@ -41,8 +47,8 @@ public class UserService {
      * @throws IllegalArgumentException if user not found
      */
     public SuccessResponse deleteUser(Long id) {
-        User user = userDAO.findById(id);
-        if (user == null) {
+        UserEntity userEntity = userDAO.findById(id);
+        if (userEntity == null) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
         userDAO.delete(id);
@@ -54,7 +60,7 @@ public class UserService {
      *
      * @return list of all users
      */
-    public java.util.List<org.nath.sns.identity.model.User> getAllUsers() {
+    public java.util.List<User> getAllUsers() {
         return userDAO.findAll().stream()
                 .map(this::convertToApiUser)
                 .collect(java.util.stream.Collectors.toList());
@@ -67,12 +73,12 @@ public class UserService {
      * @return the user
      * @throws IllegalArgumentException if user not found
      */
-    public org.nath.sns.identity.model.User getUserById(Long id) {
-        User user = userDAO.findById(id);
-        if (user == null) {
+    public User getUserById(Long id) {
+        UserEntity userEntity = userDAO.findById(id);
+        if (userEntity == null) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
-        return convertToApiUser(user);
+        return convertToApiUser(userEntity);
     }
 
     /**
@@ -83,28 +89,34 @@ public class UserService {
      * @return the updated user
      * @throws IllegalArgumentException if user not found
      */
-    public org.nath.sns.identity.model.User updateUser(Long id, UpdateUserRequest updateUserRequest) {
-        User existingUser = userDAO.findById(id);
-        if (existingUser == null) {
+    public User updateUser(Long id, UpdateUserRequest updateUserRequest) {
+        UserEntity existingUserEntity = userDAO.findById(id);
+        if (existingUserEntity == null) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
-        existingUser.setUsername(updateUserRequest.getUsername());
-        existingUser.setEmail(updateUserRequest.getEmail());
-        User updatedUser = userDAO.update(existingUser);
-        return convertToApiUser(updatedUser);
+        if(updateUserRequest.getPassword()!=null) {
+            // Generate a random salt and hash the plaintext password (log_rounds = 12 recommended)
+            String salt = BCrypt.gensalt(12);
+            String hashedPassword = BCrypt.hashpw(updateUserRequest.getPassword(), salt);
+            existingUserEntity.setPasswordHash(hashedPassword);
+        }
+        existingUserEntity.setUsername(updateUserRequest.getUsername());
+        existingUserEntity.setEmail(updateUserRequest.getEmail());
+        UserEntity updatedUserEntity = userDAO.update(existingUserEntity);
+        return convertToApiUser(updatedUserEntity);
     }
 
     /**
      * Converts a JPA User entity to an API User model.
      *
-     * @param user the JPA entity
+     * @param userEntity the JPA entity
      * @return the API model
      */
-    private org.nath.sns.identity.model.User convertToApiUser(User user) {
+    private User convertToApiUser(UserEntity userEntity) {
         org.nath.sns.identity.model.User apiUser = new org.nath.sns.identity.model.User();
-        apiUser.setId(user.getId());
-        apiUser.setUsername(user.getUsername());
-        apiUser.setEmail(user.getEmail());
+        apiUser.setId(userEntity.getId());
+        apiUser.setUsername(userEntity.getUsername());
+        apiUser.setEmail(userEntity.getEmail());
         return apiUser;
     }
 }

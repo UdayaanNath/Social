@@ -3,44 +3,44 @@ package org.nath.sns.dao;
 import io.dropwizard.hibernate.AbstractDAO;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.SessionFactory;
-import org.nath.sns.entity.User;
+import org.nath.sns.entity.UserEntity;
 
 import java.util.List;
 
-public class UserDAO extends AbstractDAO<User> {
+public class UserDAO extends AbstractDAO<UserEntity> {
 
     public UserDAO(SessionFactory factory) {
         super(factory);
     }
 
     @UnitOfWork
-    public User create(User user) {
-        return (User) persist(user);
+    public UserEntity create(UserEntity userEntity) {
+        return (UserEntity) persist(userEntity);
     }
 
     @UnitOfWork
-    public User findById(Long id) {
-        return (User) get(id);
+    public UserEntity findById(Long id) {
+        return (UserEntity) get(id);
     }
 
     @UnitOfWork
     @SuppressWarnings("unchecked")
-    public List<User> findAll() {
-        return (List<User>) currentSession()
-                .createQuery("FROM org.nath.sns.entity.User", User.class)
+    public List<UserEntity> findAll() {
+        return (List<UserEntity>) currentSession()
+                .createQuery("FROM org.nath.sns.entity.UserEntity", UserEntity.class)
                 .list();
     }
 
     @UnitOfWork
-    public User update(User user) {
-        return (User) currentSession().merge(user);
+    public UserEntity update(UserEntity userEntity) {
+        return (UserEntity) currentSession().merge(userEntity);
     }
 
     @UnitOfWork
     public void delete(Long id) {
-        User user = findById(id);
-        if (user != null) {
-            currentSession().delete(user);
+        UserEntity userEntity = findById(id);
+        if (userEntity != null) {
+            currentSession().delete(userEntity);
         }
     }
 }
