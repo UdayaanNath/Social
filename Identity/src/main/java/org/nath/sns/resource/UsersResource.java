@@ -1,8 +1,6 @@
 package org.nath.sns.resource;
 
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.SecurityContext;
 import org.nath.sns.dto.AuthenticatedUser;
 import org.nath.sns.identity.UsersApi;
 import org.nath.sns.identity.model.CreateUserRequest;
@@ -14,10 +12,10 @@ import org.nath.sns.service.UserService;
 import io.dropwizard.hibernate.UnitOfWork;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import org.nath.sns.util.UserContextFilter;
 import org.nath.sns.util.UserValidationUtil;
 
 import java.util.List;
@@ -25,8 +23,6 @@ import java.util.List;
 @Singleton
 public class UsersResource implements UsersApi {
 
-    @Context
-    private SecurityContext securityContext;
     private final UserService userService;
 
     @Inject
@@ -51,10 +47,10 @@ public class UsersResource implements UsersApi {
 
     @Override
     @UnitOfWork
-    @RolesAllowed("DELETE_USER")
+    @RolesAllowed({"DELETE_USER", "ADMIN"})
     public SuccessResponse deleteUser(Long id) {
         try {
-            AuthenticatedUser user = (AuthenticatedUser) securityContext.getUserPrincipal();
+            AuthenticatedUser user = UserContextFilter.getCurrentUser();
             UserValidationUtil.validateDifferentUser(user, id);
 
             return userService.deleteUser(id);
@@ -93,10 +89,10 @@ public class UsersResource implements UsersApi {
 
     @Override
     @UnitOfWork
-    @RolesAllowed("GET_USER")
+    @RolesAllowed({"GET_USER", "ADMIN"})
     public User getUserById(Long id) {
         try {
-            AuthenticatedUser user = (AuthenticatedUser) securityContext.getUserPrincipal();
+            AuthenticatedUser user = UserContextFilter.getCurrentUser();
             UserValidationUtil.validateDifferentUser(user, id);
 
             return userService.getUserById(id);
@@ -119,10 +115,10 @@ public class UsersResource implements UsersApi {
 
     @Override
     @UnitOfWork
-    @RolesAllowed("UPDATE_USER")
+    @RolesAllowed({"UPDATE_USER", "ADMIN"})
     public User updateUser(Long id, UpdateUserRequest updateUserRequest) {
         try {
-            AuthenticatedUser user = (AuthenticatedUser) securityContext.getUserPrincipal();
+            AuthenticatedUser user = UserContextFilter.getCurrentUser();
             UserValidationUtil.validateDifferentUser(user, id);
 
             return userService.updateUser(id, updateUserRequest);

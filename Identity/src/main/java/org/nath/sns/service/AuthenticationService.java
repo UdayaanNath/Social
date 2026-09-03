@@ -1,6 +1,7 @@
 package org.nath.sns.service;
 
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.nath.sns.dao.UserDAO;
 import org.nath.sns.dao.UserRoleDAO;
@@ -11,6 +12,7 @@ import org.nath.sns.identity.model.LoginResponse;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class AuthenticationService {
 
     private final UserDAO userDAO;
@@ -26,10 +28,11 @@ public class AuthenticationService {
 
     public Optional<UserEntity> validatCredentials(LoginRequest loginRequest) {
         Optional<UserEntity> user = userDAO.findByUsername(loginRequest.getUsername());
+        log.debug("user.isEmpty():"+user.isEmpty());
         if (user.isEmpty() || !BCrypt.checkpw(loginRequest.getPassword(), user.get().getPasswordHash())) {
-            return user;
+            throw new IllegalArgumentException("Incorrect password or User not found");
         }
-        throw new IllegalArgumentException("Incorrect password or User not found");
+        return user;
     }
 
 

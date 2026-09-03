@@ -43,7 +43,6 @@ public class IdentityModule extends AbstractModule {
         bind(UsersResource.class).in(Singleton.class);
         bind(UserRoleService.class).in(Singleton.class);
         bind(UserRolesResource.class).in(Singleton.class);
-        bind(JwtTokenService.class).in(Singleton.class);
         bind(AuthenticationService.class).in(Singleton.class);
         bind(AuthResource.class).in(Singleton.class);
     }

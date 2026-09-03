@@ -23,6 +23,7 @@ import org.nath.sns.resource.UsersResource;
 import org.nath.sns.resource.UserRolesResource;
 import org.nath.sns.util.JwtAuthenticatorUtil;
 import org.nath.sns.util.RoleAuthorizerUtil;
+import org.nath.sns.util.UserContextFilter;
 
 
 public class IdentityService extends Application<IdentityConfig>
@@ -52,6 +53,8 @@ public class IdentityService extends Application<IdentityConfig>
 
         // Register UnitOfWork listener for Hibernate session management
         environment.jersey().register(new UnitOfWorkApplicationListener());
+        // Register UserContextFilter to capture Authenticated User
+        environment.jersey().register(new UserContextFilter());
 
         environment.jersey().register(injector.getInstance(AppHealthResource.class));
         environment.jersey().register(injector.getInstance(UsersResource.class));
