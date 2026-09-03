@@ -1,0 +1,650 @@
+openapi: 3.0.3
+info:
+  title: Identity API
+  description: API for managing users in the Social application
+  version: 1.0.0
+  contact:
+    name: Social API Support
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /users:
+    post:
+      summary: Create a new user
+      description: Creates a new user with the provided username and email
+      operationId: createUser
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      summary: List all users
+      description: Retrieves a list of all users
+      operationId: getAllUsers
+      tags:
+        - users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieves a user by their unique identifier
+      operationId: getUserById
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update an existing user
+      description: Updates a user's information by their unique identifier
+      operationId: updateUser
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a user
+      description: Deletes a user by their unique identifier
+      operationId: deleteUser
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user-roles:
+    post:
+      summary: Create a new user role
+      description: Creates a new user role with the provided user and role information
+      operationId: createUserRole
+      tags:
+        - userRoles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRoleRequest'
+      responses:
+        '201':
+          description: User role created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      summary: List all user roles
+      description: Retrieves a list of all user roles, optionally filtered by user id, username, role id, or role name
+      operationId: getAllUserRoles
+      tags:
+        - userRoles
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: Filter by the unique identifier of the user
+          schema:
+            type: integer
+            format: int64
+        - name: username
+          in: query
+          required: false
+          description: Filter by the username of the user
+          schema:
+            type: string
+            maxLength: 50
+        - name: roleId
+          in: query
+          required: false
+          description: Filter by the unique identifier of the role
+          schema:
+            type: integer
+            format: int64
+        - name: roleName
+          in: query
+          required: false
+          description: Filter by the name of the role
+          schema:
+            type: string
+            maxLength: 50
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRole'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user-roles/{id}:
+    get:
+      summary: Get user role by ID
+      description: Retrieves a user role by its unique identifier
+      operationId: getUserRoleById
+      tags:
+        - userRoles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user role
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        '404':
+          description: User role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update an existing user role
+      description: Updates a user role's information by its unique identifier
+      operationId: updateUserRole
+      tags:
+        - userRoles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user role
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRoleRequest'
+      responses:
+        '200':
+          description: User role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a user role
+      description: Deletes a user role by its unique identifier
+      operationId: deleteUserRole
+      tags:
+        - userRoles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user role
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User role deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: User role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      summary: Authenticate user
+      description: Authenticates a user with username and password, returning an access token on success
+      operationId: login
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request - Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Invalid username or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    UserRole:
+      type: object
+      description: Represents a user role assignment in the system
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the user role
+          readOnly: true
+          example: 1
+        userId:
+          type: integer
+          format: int64
+          description: The unique identifier of the user
+          example: 1
+        username:
+          type: string
+          description: The username of the user
+          maxLength: 50
+          example: johndoe
+        roleId:
+          type: integer
+          format: int64
+          description: The unique identifier of the role
+          example: 1
+        roleName:
+          type: string
+          description: The name of the role
+          maxLength: 50
+          example: admin
+        status:
+          $ref: '#/components/schemas/UserRoleStatus'
+      required:
+        - id
+        - userId
+        - username
+        - roleId
+        - roleName
+        - status
+
+    CreateUserRoleRequest:
+      type: object
+      description: Request body for creating a new user role
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: The unique identifier of the user
+          example: 1
+        username:
+          type: string
+          description: The username of the user
+          maxLength: 50
+          example: johndoe
+        roleId:
+          type: integer
+          format: int64
+          description: The unique identifier of the role
+          example: 1
+        roleName:
+          type: string
+          description: The name of the role
+          maxLength: 50
+          example: admin
+        status:
+          $ref: '#/components/schemas/UserRoleStatus'
+          default: ACTIVE
+      required:
+        - userId
+        - username
+        - roleId
+        - roleName
+
+    UpdateUserRoleRequest:
+      type: object
+      description: Request body for updating an existing user role
+      properties:
+        status:
+          $ref: '#/components/schemas/UserRoleStatus'
+      required:
+        - status
+
+    UserRoleStatus:
+      type: string
+      description: The status of a user role
+      enum:
+        - ACTIVE
+        - INACTIVE
+      example: ACTIVE
+
+    User:
+      type: object
+      description: Represents a user in the system
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the user
+          readOnly: true
+          example: 1
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          minLength: 1
+          maxLength: 100
+          example: john.doe@example.com
+      required:
+        - id
+        - username
+        - email
+
+    CreateUserRequest:
+      type: object
+      description: Request body for creating a new user
+      properties:
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          minLength: 1
+          maxLength: 100
+          example: john.doe@example.com
+        password:
+          type: string
+          description: The login password for user
+          minLength: 1
+          maxLength: 60
+      required:
+        - username
+        - email
+        - password
+
+    UpdateUserRequest:
+      type: object
+      description: Request body for updating an existing user
+      properties:
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          minLength: 1
+          maxLength: 100
+          example: john.doe@example.com
+        password:
+          type: string
+          description: The login password for user
+          minLength: 100
+          maxLength: 100
+      required:
+        - username
+        - email
+
+    Error:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Error code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: Invalid input provided
+      required:
+        - code
+        - message
+
+    SuccessResponse:
+      type: object
+      description: Success response
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: User deleted successfully
+      required:
+        - message
+
+    LoginRequest:
+      type: object
+      description: Request body for user login
+      properties:
+        username:
+          type: string
+          description: The username of the user
+          minLength: 1
+          maxLength: 50
+          example: johndoe
+        password:
+          type: string
+          description: The user's login password
+          minLength: 1
+          maxLength: 60
+      required:
+        - username
+        - password
+
+    LoginResponse:
+      type: object
+      description: Response containing the access token on successful login
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token for authenticated requests
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      required:
+        - accessToken

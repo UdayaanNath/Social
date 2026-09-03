@@ -8,8 +8,114 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <dropwizard.version>4.0.0</dropwizard.version>
+    <postgresql.version>42.7.3</postgresql.version>
+    <guice.version>7.0.0</guice.version>
+    <guice-bridge.version>3.0.5</guice-bridge.version>
+    <jersey-hk2.version>3.1.5</jersey-hk2.version>
+    <swagger-annotations-version>2.2.20</swagger-annotations-version>
+    <java-jwt-version>4.4.0</java-jwt-version>
+    <bcrypt-version>0.4</bcrypt-version>
+    <bcpkix-jdk18on-version>1.78.1</bcpkix-jdk18on-version>
+    <lombok-version>1.18.32</lombok-version>
+    <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
   </properties>
   <modules>
     <module>common</module>
+    <module>identity-api-spec</module>
+    <module>identity</module>
   </modules>
+  <dependencies>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-core</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-hibernate</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard</groupId>
+      <artifactId>dropwizard-auth</artifactId>
+      <version>${dropwizard.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+    </dependency>
+    <!-- Auth0 Java JWT (Single Dependency) -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>4.4.0</version>
+    </dependency>
+
+    <!-- BouncyCastle for reading PEM RSA Key files -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bcpkix-jdk18on-version}</version>
+    </dependency>
+    <!-- BCrypt -->
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>${bcrypt-version}</version>
+    </dependency>
+    <!-- Google Guice -->
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${guice.version}</version>
+      <!-- Guice 7 is required for Jakarta EE / Dropwizard 4 -->
+    </dependency>
+    <!-- Jersey HK2 Guice Bridge -->
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>${jersey-hk2.version}</version>
+      <!-- Should match Dropwizard 4's Jersey version -->
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>guice-bridge</artifactId>
+      <version>${guice-bridge.version}</version>
+      <!-- Should match Dropwizard 4's HK2 version -->
+    </dependency>
+    <!-- Swagger Annotations -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger-annotations-version}</version>
+    </dependency>
+    <!-- Lombok  -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok-version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin-version}</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok-version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
