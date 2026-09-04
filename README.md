@@ -99,7 +99,7 @@ Then run the Identity service:
 
 ```bash
 cd identity/scripts
-./run.sh
+./desktop_run.sh
 ```
 
 Or directly:

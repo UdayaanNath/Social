@@ -8,6 +8,8 @@ import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.nath.sns.config.IdentityConfig;
@@ -38,6 +40,12 @@ public class IdentityService extends Application<IdentityConfig>
 
     @Override
     public void initialize(Bootstrap<IdentityConfig> bootstrap) {
+        bootstrap.setConfigurationSourceProvider(
+                new SubstitutingSourceProvider(
+                        bootstrap.getConfigurationSourceProvider(),
+                        new EnvironmentVariableSubstitutor(false)
+                )
+        );
         bootstrap.addBundle(hibernateBundle);
     }
 
