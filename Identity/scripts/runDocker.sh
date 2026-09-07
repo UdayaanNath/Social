@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Navigate to the repository root (two levels up from identity/scripts/)
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Change to the repository root
+cd "$REPO_ROOT"
+
+docker run --rm \
+  -p 8080:8080 \
+  -p 8081:8081 \
+  -e POSTGRESQL_DB_URL=host.docker.internal \
+  --mount type=bind,src=/d/Uday/Documents/Projects/Social/keys/private_key.pem,dst=/run/secrets/identity_private_key,readonly \
+  --mount type=bind,src=/d/Uday/Documents/Projects/Social/keys/public_key.pem,dst=/run/secrets/identity_public_key,readonly \
+  identity-service
