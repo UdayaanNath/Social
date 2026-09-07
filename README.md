@@ -1,6 +1,6 @@
 # Social
 
-A Java-based backend platform for building a social networking application. This is a multi-module Maven project built with **Java 17** and **Dropwizard 4.0**, currently focusing on the **Identity Service** — the authentication and user-management module that provides JWT-based authentication, role-based access control (RBAC), and user CRUD operations backed by PostgreSQL.
+A Java-based backend platform for building a social networking application. This is a multi-module Maven project built with **Java 17** and **Dropwizard 4.0**. It includes an Identity Service for authentication and user management, plus an API Gateway that proxies Identity traffic and applies Redis-backed rate limiting.
 
 ## Features
 
@@ -10,6 +10,7 @@ A Java-based backend platform for building a social networking application. This
 - **User Role Management** — Assign and manage roles per user with ACTIVE/INACTIVE status and flexible query filters.
 - **OpenAPI-Driven Development** — JAX-RS interfaces and models are auto-generated from an OpenAPI 3.0.3 specification.
 - **Self-Protection** — Users cannot delete or modify their own account.
+- **API Gateway** — Transparent proxy for Identity Service routes with per-API-key token-bucket rate limiting.
 
 ## Architecture
 
@@ -19,6 +20,7 @@ This repo is a multi-module Maven project (`org.nath.sns` / `Social`):
 |--------|-------------|
 | `identity-api-spec` | Holds the OpenAPI 3.0.3 specification (`api.yaml`) that defines the Identity API contract |
 | `identity` | The main Identity Service implementation (Dropwizard 4 app) |
+| `api-gateway` | Transparent HTTP gateway for Identity routes with Redis-backed rate limiting |
 | `common` | Shared placeholder module (currently minimal) |
 
 ### Identity Service Internals
@@ -45,6 +47,8 @@ The `identity` module follows a layered architecture:
 | jBCrypt (mindrot) | Password hashing |
 | OpenAPI Generator | Code generation from `api.yaml` |
 | Lombok | Boilerplate reduction |
+| Redis / Jedis | Distributed token-bucket rate limiting |
+| Jetty Proxy | Transparent forwarding from the API Gateway to backend services |
 | Swagger annotations | API metadata |
 
 ## Identity Service
@@ -124,6 +128,67 @@ cd identity/src/main/resources
 ```
 
 This creates `alice`, `bob`, `carol`, and `david` with password `ChangeMe123!`.
+
+## API Gateway
+
+The API Gateway forwards requests from `/identity/*` to the Identity Service and applies rate limiting before a request reaches the proxy. Every gateway request must include an `X-API-Key` header; that key identifies the client bucket in Redis.
+
+| Endpoint | Purpose |
+|----------|---------|
+| `http://localhost:8082/identity/*` | Proxied Identity Service traffic |
+| `http://localhost:8083` | Dropwizard admin endpoint |
+
+### Run locally
+
+Start PostgreSQL, Redis, and the Identity Service first. Then start the gateway from the repository root:
+
+```bash
+mvn -pl api-gateway -am package -DskipTests
+java -jar api-gateway/target/api-gateway-1.0-SNAPSHOT.jar server api-gateway/config/desktop.conf
+```
+
+The desktop configuration proxies to `http://localhost:8080`, uses Redis at `localhost:6379`, and limits each API key to a bucket capacity of one token with a refill rate of one token per second.
+
+For example, two immediate requests with the same key should result in one proxied response and one `429 Too Many Requests` response:
+
+```bash
+curl -i -H "X-API-Key: local-test-client" http://localhost:8082/identity/users
+curl -i -H "X-API-Key: local-test-client" http://localhost:8082/identity/users
+```
+
+### Run with Docker
+
+Build the image from the repository root, because the Dockerfile builds from the full Maven reactor:
+
+```bash
+docker build -f api-gateway/docker/Dockerfile -t api-gateway-service .
+```
+
+When Identity Service and Redis run on the Docker Desktop host, run:
+
+```bash
+docker run --rm -p 8082:8082 -p 8083:8083 \
+  -e IDENTITY_SERVICE_URL=http://host.docker.internal:8080 \
+  -e JEDIS_ENDPOINT=host.docker.internal \
+  -e PORT=6379 \
+  -e RATE_LIMIT_STRATEGY_NAME=TOKEN_BUCKET \
+  api-gateway-service
+```
+
+Within a shared Docker network, replace `host.docker.internal` with the applicable Identity and Redis service names. `localhost` inside the gateway container refers to the gateway container itself.
+
+### Gateway configuration
+
+`api-gateway/config/base.conf` is intended for containerized deployment and reads these environment variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `IDENTITY_SERVICE_URL` | Identity Service base URL | `http://identity:8080` |
+| `JEDIS_ENDPOINT` | Redis host name | `redis` |
+| `PORT` | Redis port | `6379` |
+| `RATE_LIMIT_STRATEGY_NAME` | Rate-limit strategy | `TOKEN_BUCKET` |
+
+The gateway enables Dropwizard environment-variable substitution during bootstrap, so these values are resolved before configuration is parsed.
 
 ## Configuration
 
