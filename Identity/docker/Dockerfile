@@ -8,9 +8,9 @@ WORKDIR /project
 COPY . .
 
 # Build ONLY Identity and any sibling submodules it depends on:
-#   -pl identity  -> Target project list (identity module)
-#   -am           -> "Also Make" (compiles sibling submodules identity depends on)
-RUN mvn clean package -pl identity -am -DskipTests
+#   -pl Identity  -> Target project list (Identity module)
+#   -am           -> "Also Make" (compiles sibling submodules Identity depends on)
+RUN mvn clean package -pl Identity -am -DskipTests
 
 # ==========================================
 # Stage 2: Lightweight Runtime Image
