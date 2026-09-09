@@ -25,7 +25,7 @@ COPY --from=build /project/api-gateway/target/api-gateway-1.0-SNAPSHOT.jar ./tar
 COPY api-gateway/config/base.conf .
 COPY api-gateway/scripts/run.sh .
 
-RUN chmod +x run.sh
+RUN sed -i 's/\r$//' run.sh && chmod +x run.sh
 
 EXPOSE 8082 8083
 
