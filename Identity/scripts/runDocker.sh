@@ -14,9 +14,7 @@ docker run --rm \
   -p 8081:8081 \
   -e POSTGRESQL_DB_USER=social_app \
   -e POSTGRESQL_DB_PASSWORD=123456789 \
-  -e POSTGRESQL_DB_URL=host.docker.internal \
-  -e POSTGRESQL_DB_PORT=5432 \
-  -e POSTGRESQL_DB_NAME=social \
+  -e POSTGRESQL_DB_URL=postgresql://host.docker.internal:5432/social \
   --mount type=bind,src=/d/Uday/Documents/Projects/Social/keys/private_key.pem,dst=/run/secrets/identity_private_key,readonly \
   --mount type=bind,src=/d/Uday/Documents/Projects/Social/keys/public_key.pem,dst=/run/secrets/identity_public_key,readonly \
   identity-service
