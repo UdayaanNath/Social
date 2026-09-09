@@ -25,7 +25,9 @@ COPY --from=build /project/identity/target/identity-1.0-SNAPSHOT.jar ./target/id
 COPY identity/config/base.conf .
 COPY identity/scripts/run.sh .
 
-RUN chmod +x run.sh
+# The repository may be checked out with Windows line endings; normalize the
+# shell script so Alpine can resolve its /bin/sh shebang.
+RUN sed -i 's/\r$//' run.sh && chmod +x run.sh
 
 EXPOSE 8080 8081
 
