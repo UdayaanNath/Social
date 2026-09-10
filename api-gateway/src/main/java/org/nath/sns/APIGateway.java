@@ -66,5 +66,7 @@ public class APIGateway extends Application<APIGatewayConfiguration>
         proxyServlet.addMapping("/identity/*");
         proxyServlet.setInitParameter("proxyTo", config.getIdentityServiceUrl());
         proxyServlet.setInitParameter("prefix", "/identity");
+
+        environment.jersey().register(injector.getInstance(org.nath.sns.resource.GatewayHealthResource.class));
     }
 }

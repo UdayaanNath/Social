@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import org.nath.sns.filter.RateLimitFilter;
+import org.nath.sns.resource.GatewayHealthResource;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -16,7 +17,7 @@ public class APIGatewayModule extends AbstractModule {
 
     @Override
     protected void configure() {
-
+        bind(GatewayHealthResource.class).in(Singleton.class);
     }
 
     @Provides
