@@ -11,6 +11,8 @@ import io.dropwizard.core.setup.Environment;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.flyway.FlywayBundle;
+import org.flywaydb.core.Flyway;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.nath.sns.config.IdentityConfig;
 import org.nath.sns.config.IdentityModule;
@@ -34,7 +36,7 @@ public class IdentityService extends Application<IdentityConfig>
             new HibernateBundle<IdentityConfig>(UserEntity.class, UserRoleEntity.class) {
                 @Override
                 public DataSourceFactory getDataSourceFactory(IdentityConfig config) {
-                    return config.getDataSourceFactory();
+                    return config.getDatabase();
                 }
             };
 
@@ -47,6 +49,17 @@ public class IdentityService extends Application<IdentityConfig>
                 )
         );
         bootstrap.addBundle(hibernateBundle);
+        bootstrap.addBundle(new FlywayBundle<IdentityConfig>() {
+            @Override
+            public DataSourceFactory getDataSourceFactory(IdentityConfig configuration) {
+                return configuration.getDatabase();
+            }
+
+            @Override
+            public io.dropwizard.flyway.FlywayFactory getFlywayFactory(IdentityConfig configuration) {
+                return configuration.getFlyway();
+            }
+        });
     }
 
     public static void main( String[] args ) throws Exception {
@@ -63,6 +76,11 @@ public class IdentityService extends Application<IdentityConfig>
         environment.jersey().register(new UnitOfWorkApplicationListener());
         // Register UserContextFilter to capture Authenticated User
         environment.jersey().register(new UserContextFilter());
+
+        // Run Flyway migrations automatically on startup
+        Flyway flyway = configuration.getFlyway()
+                .build(configuration.getDatabase().build(environment.metrics(), "flyway"));
+        flyway.migrate();
 
         environment.jersey().register(injector.getInstance(AppHealthResource.class));
         environment.jersey().register(injector.getInstance(UsersResource.class));

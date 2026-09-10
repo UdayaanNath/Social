@@ -21,6 +21,7 @@
     <lombok-version>1.18.32</lombok-version>
     <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
     <jedis.version>5.1.0</jedis.version>
+    <flyway.version>10.5.0</flyway.version>
   </properties>
   <modules>
     <module>common</module>
@@ -45,6 +46,11 @@
       <version>${dropwizard.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.modules</groupId>
+      <artifactId>dropwizard-flyway</artifactId>
+      <version>4.0.0-6</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-proxy</artifactId>
       <version>${jetty-proxy.version}</version>
@@ -58,7 +64,7 @@
     <dependency>
       <groupId>com.auth0</groupId>
       <artifactId>java-jwt</artifactId>
-      <version>4.4.0</version>
+      <version>${java-jwt-version}</version>
     </dependency>
     <!-- BouncyCastle for reading PEM RSA Key files -->
     <dependency>
@@ -110,6 +116,11 @@
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
       <version>${jedis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+      <version>${flyway.version}</version>
     </dependency>
   </dependencies>
   <build>

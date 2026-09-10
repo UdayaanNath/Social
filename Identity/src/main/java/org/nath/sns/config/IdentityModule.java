@@ -63,8 +63,8 @@ public class IdentityModule extends AbstractModule {
     @Singleton
     public JwtTokenService getJwtTokenService() throws Exception{
         // 1. Load RSA Keys
-        File privateKeyFile = new File(identityConfig.getJwtConfig().getPrivateKeyPath());
-        File publicKeyFile = new File(identityConfig.getJwtConfig().getPublicKeyPath());
+        File privateKeyFile = new File(identityConfig.getJwt().getPrivateKeyPath());
+        File publicKeyFile = new File(identityConfig.getJwt().getPublicKeyPath());
 
         RSAPrivateKey privateKey = RsaKeyLoaderUtil.loadPrivateKey(privateKeyFile);
         RSAPublicKey publicKey = RsaKeyLoaderUtil.loadPublicKey(publicKeyFile);
@@ -73,7 +73,7 @@ public class IdentityModule extends AbstractModule {
         JwtTokenService tokenService = new JwtTokenService(
                 privateKey,
                 publicKey,
-                identityConfig.getJwtConfig().getExpirationMs()
+                identityConfig.getJwt().getExpirationMs()
         );
 
         return tokenService;
