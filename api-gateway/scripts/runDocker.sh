@@ -14,4 +14,6 @@ docker run -p 8082:8082 -p 8083:8083 \
   -e JEDIS_ENDPOINT=host.docker.internal \
   -e PORT=6379 \
   -e RATE_LIMIT_STRATEGY_NAME=TOKEN_BUCKET \
+  --memory="256m" \
+  --cpus="0.1" \
   api-gateway-service
