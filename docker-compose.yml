@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 256M
+  postgres:
+    image: postgres:15-alpine
+    command: ["postgres", "-c", "max_connections=300"]
+    environment:
+      - POSTGRES_USER=social_app
+      - POSTGRES_PASSWORD=123456789
+      - POSTGRES_DB=social
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+  identity-service:
+    image: identity-service
+    build:
+        context: ./
+        dockerfile: ./Identity/docker/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - POSTGRESQL_DB_USER=social_app
+      - POSTGRESQL_DB_PASSWORD=123456789
+      - POSTGRESQL_DB_URL=postgresql://postgres:5432/social
+      - IDENTITY_PRIVATE_KEY_PATH=//run/secrets/identity_private_key
+      - IDENTITY_PUBLIC_KEY_PATH=//run/secrets/identity_public_key
+      # Dollar signs must be escaped with a double dollar sign ($$) in docker-compose
+      - ADMIN_PASSWORD_HASH=$$2a$$12$$hlD0jaA9lHz2yKsFScOq4.8i3m1MfZy8GU5lxRhuAkF4Jj2XWJnqi
+    volumes:
+      - /d/Uday/Documents/Projects/Social/keys/private_key.pem:/run/secrets/identity_private_key:ro
+      - /d/Uday/Documents/Projects/Social/keys/public_key.pem:/run/secrets/identity_public_key:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    depends_on:
+      - postgres
+
+  api-gateway:
+    image: api-gateway-service
+    build:
+        context: ./
+        dockerfile: ./api-gateway/docker/Dockerfile
+    ports:
+      - "8082:8082"
+      - "8083:8083"
+    environment:
+      # Updated to use the internal Docker network service name instead of host.docker.internal
+      - IDENTITY_SERVICE_URL=http://identity-service:8080
+      - JEDIS_ENDPOINT=redis
+      - PORT=6379
+      - RATE_LIMIT_STRATEGY_NAME=TOKEN_BUCKET
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 256M
+    depends_on:
+      - identity-service
+      - redis
+
+  # --- Locust Load Testing Infrastructure ---
+  locust-master:
+    image: locustio/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locust:/mnt/locust
+    # Pointing Locust to the api-gateway container on port 8082
+    command: -f /mnt/locust/locustfile.py --master -H http://api-gateway:8082
+    depends_on:
+      - api-gateway
+
+  locust-worker:
+    image: locustio/locust
+    volumes:
+      - ./locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
+    depends_on:
+      - locust-master

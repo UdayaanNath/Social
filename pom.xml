@@ -137,6 +137,9 @@
               <version>${lombok-version}</version>
             </path>
           </annotationProcessorPaths>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
     </plugins>

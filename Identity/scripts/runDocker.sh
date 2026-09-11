@@ -20,4 +20,6 @@ docker run --rm \
   -e ADMIN_PASSWORD_HASH=$2a$12$hlD0jaA9lHz2yKsFScOq4.8i3m1MfZy8GU5lxRhuAkF4Jj2XWJnqi \
   --mount type=bind,src=/d/Uday/Documents/Projects/Social/keys/private_key.pem,dst=/run/secrets/identity_private_key,readonly \
   --mount type=bind,src=/d/Uday/Documents/Projects/Social/keys/public_key.pem,dst=/run/secrets/identity_public_key,readonly \
+  --memory="256m" \
+  --cpus="0.1" \
   identity-service
