@@ -28,6 +28,7 @@
     <module>identity-api-spec</module>
     <module>Identity</module>
     <module>api-gateway</module>
+    <module>twitter</module>
   </modules>
   <dependencies>
     <dependency>
