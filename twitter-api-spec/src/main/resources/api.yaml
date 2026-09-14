@@ -8,3 +8,204 @@ info:
 servers:
   - url: http://localhost:8080
     description: Local development server
+
+
+paths:
+  /tweets:
+    get:
+      summary: Get all tweets
+      description: Retrieve a list of all tweets.
+      responses:
+        '200':
+          description: A list of tweets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tweet'
+    post:
+      summary: Create a new tweet
+      description: Create a new tweet with the provided content.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTweetRequest'
+      responses:
+        '201':
+          description: Tweet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tweet'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tweets/{id}:
+    get:
+      summary: Get a tweet by ID
+      description: Retrieve a specific tweet by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: A single tweet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tweet'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update a tweet by ID
+      description: Update the content of an existing tweet by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTweetRequest'
+      responses:
+        '200':
+          description: Tweet updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tweet'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a tweet by ID
+      description: Delete an existing tweet by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '204':
+          description: Tweet deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Tweet:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Unique identifier for the tweet
+        content:
+          type: string
+          maxLength: 2048
+          description: The content of the tweet
+        authorId:
+          type: number
+          description: The ID of the author of the tweet
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the tweet was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the tweet was last updated
+      required:
+        - id
+        - content
+        - authorId
+        - createdAt
+
+    CreateTweetRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 2048
+          description: The content of the tweet
+        authorId:
+          type: number
+          description: The ID of the author of the tweet
+      required:
+        - content
+        - authorId
+
+    UpdateTweetRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 2048
+          description: The content of the tweet
+      required:
+        - content
+
+    Error:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Error code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: Invalid input provided
+      required:
+        - code
+        - message
+
+    SuccessResponse:
+      type: object
+      description: Success response
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: User deleted successfully
+      required:
+        - message
