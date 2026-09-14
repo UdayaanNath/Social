@@ -1,0 +1,10 @@
+openapi: 3.0.3
+info:
+  title: Twitter API
+  description: API for managing tweets in the Social application
+  version: 1.0.0
+  contact:
+    name: Social API Support
+servers:
+  - url: http://localhost:8080
+    description: Local development server
