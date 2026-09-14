@@ -3,6 +3,7 @@ package org.nath.sns;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.core.Application;
@@ -19,6 +20,9 @@ import org.nath.sns.entity.TweetMetadataEntity;
 import org.nath.sns.manager.MongoClientManager;
 import org.nath.sns.resource.MongoHealthCheck;
 import org.nath.sns.resource.TwitterDataPlaneHealthResource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TwitterDataPlaneService extends Application<TwitterDataPlaneConfiguration>
@@ -77,5 +81,28 @@ public class TwitterDataPlaneService extends Application<TwitterDataPlaneConfigu
         // Register Health Checks
         environment.healthChecks().register("mongo", new MongoHealthCheck(mongoClient));
         environment.jersey().register(injector.getInstance(TwitterDataPlaneHealthResource.class));
+
+        // Initialize MongoDB collections
+        MongoDatabase mongoDatabase = injector.getInstance(MongoDatabase.class);
+        intializeCollections(mongoDatabase, configuration);
+    }
+
+    public void intializeCollections(MongoDatabase mongoDatabase, TwitterDataPlaneConfiguration configuration) {
+        // 1. Get a list of all existing collections
+        List<String> existingCollections = new ArrayList<>();
+        for (String collectionName : mongoDatabase.listCollectionNames()) {
+            existingCollections.add(collectionName);
+        }
+
+        // 2. Define the collections your app requires
+        List<String> requiredCollections = List.of("tweets");
+
+        // 3. Create them if they don't exist
+        for (String required : requiredCollections) {
+            if (!existingCollections.contains(required)) {
+                mongoDatabase.createCollection(required);
+            }
+        }
+
     }
 }
