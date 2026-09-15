@@ -17,7 +17,7 @@ public class TweetMetadataDao extends AbstractDAO<TweetMetadataEntity> {
     }
 
     @UnitOfWork
-    public TweetMetadataEntity findById(Long id) {
+    public TweetMetadataEntity findById(String id) {
         return get(id);
     }
 }

@@ -15,6 +15,9 @@ paths:
     get:
       summary: Get all tweets
       description: Retrieve a list of all tweets.
+      operationId: getAllTweets
+      tags:
+        - tweets
       responses:
         '200':
           description: A list of tweets
@@ -24,9 +27,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Tweet'
+        '404':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a new tweet
       description: Create a new tweet with the provided content.
+      operationId: createTweet
+      tags:
+        - tweets
       requestBody:
         required: true
         content:
@@ -39,9 +51,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tweet'
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Authorized
           content:
             application/json:
               schema:
@@ -51,12 +69,15 @@ paths:
     get:
       summary: Get a tweet by ID
       description: Retrieve a specific tweet by its ID.
+      operationId: getTweetById
+      tags:
+        - tweets
       parameters:
         - name: id
           in: path
           required: true
           schema:
-            type: number
+            type: string
       responses:
         '200':
           description: A single tweet
@@ -74,12 +95,15 @@ paths:
     put:
       summary: Update a tweet by ID
       description: Update the content of an existing tweet by its ID.
+      operationId: updateTweet
+      tags:
+        - tweets
       parameters:
         - name: id
           in: path
           required: true
           schema:
-            type: number
+            type: string
       requestBody:
         required: true
         content:
@@ -109,12 +133,15 @@ paths:
     delete:
       summary: Delete a tweet by ID
       description: Delete an existing tweet by its ID.
+      operationId: deleteTweet
+      tags:
+        - tweets
       parameters:
         - name: id
           in: path
           required: true
           schema:
-            type: number
+            type: string
       responses:
         '204':
           description: Tweet deleted successfully
@@ -135,14 +162,15 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
           description: Unique identifier for the tweet
         content:
           type: string
           maxLength: 2048
           description: The content of the tweet
         authorId:
-          type: number
+          type: integer
+          format: int64
           description: The ID of the author of the tweet
         createdAt:
           type: string
@@ -166,7 +194,8 @@ components:
           maxLength: 2048
           description: The content of the tweet
         authorId:
-          type: number
+          type: integer
+          format: int64
           description: The ID of the author of the tweet
       required:
         - content

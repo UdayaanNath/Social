@@ -1,7 +1,10 @@
 package org.nath.sns.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.nath.sns.enums.TweetMetadataStatus;
 
@@ -9,10 +12,13 @@ import org.nath.sns.enums.TweetMetadataStatus;
 @Table(name = "tweet_metadata")
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TweetMetadataEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", nullable = false, length = 36)
+    private String id;
 
     @Column(name = "author_id", nullable = false)
     private Long authorId;

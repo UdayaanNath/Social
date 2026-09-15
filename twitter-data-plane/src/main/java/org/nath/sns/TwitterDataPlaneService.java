@@ -17,6 +17,7 @@ import org.flywaydb.core.Flyway;
 import org.nath.sns.config.TwitterDataPlaneConfiguration;
 import org.nath.sns.config.TwitterDataPlaneModule;
 import org.nath.sns.entity.TweetMetadataEntity;
+import org.nath.sns.manager.KafkaTweetsConsumerManager;
 import org.nath.sns.manager.MongoClientManager;
 import org.nath.sns.resource.MongoHealthCheck;
 import org.nath.sns.resource.TwitterDataPlaneHealthResource;
@@ -75,7 +76,7 @@ public class TwitterDataPlaneService extends Application<TwitterDataPlaneConfigu
 
         MongoClient mongoClient = injector.getInstance(MongoClient.class);
 
-        // Register the Managed lifecycle (handles clean shutdown)
+        // Register the Managed lifecycle for MongoDB (handles clean shutdown)
         environment.lifecycle().manage(new MongoClientManager(mongoClient));
 
         // Register Health Checks
@@ -85,6 +86,9 @@ public class TwitterDataPlaneService extends Application<TwitterDataPlaneConfigu
         // Initialize MongoDB collections
         MongoDatabase mongoDatabase = injector.getInstance(MongoDatabase.class);
         intializeCollections(mongoDatabase, configuration);
+
+        // Register the KafkaTweetsConsumerManager to manage the Kafka consumer lifecycle
+        environment.lifecycle().manage(injector.getInstance(KafkaTweetsConsumerManager.class));
     }
 
     public void intializeCollections(MongoDatabase mongoDatabase, TwitterDataPlaneConfiguration configuration) {

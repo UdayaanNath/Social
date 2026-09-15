@@ -6,10 +6,14 @@ import com.google.inject.Singleton;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import org.hibernate.SessionFactory;
 import org.nath.sns.dao.TweetDao;
 import org.nath.sns.dao.TweetMetadataDao;
+import org.nath.sns.manager.KafkaTweetsConsumerManager;
 import org.nath.sns.resource.TwitterDataPlaneHealthResource;
+import org.nath.sns.service.TweetMetadataService;
+import org.nath.sns.service.TweetService;
 
 public class TwitterDataPlaneModule extends AbstractModule
 {
@@ -50,7 +54,28 @@ public class TwitterDataPlaneModule extends AbstractModule
 
     @Provides
     @Singleton
+    public TweetService provideTweetService(TweetDao tweetDao) {
+        return new TweetService(tweetDao);
+    }
+
+    @Provides
+    @Singleton
     public TweetMetadataDao provideTweetMetadataDao() {
-        return new TweetMetadataDao(sessionFactory);
+        // @UnitOfWork only applies to Jersey requests by default; proxy it so Kafka
+        // consumer threads also get a bound Hibernate session + transaction.
+        return new UnitOfWorkAwareProxyFactory("hibernate", sessionFactory)
+                .create(TweetMetadataDao.class, SessionFactory.class, sessionFactory);
+    }
+
+    @Provides
+    @Singleton
+    public TweetMetadataService provideTweetMetadataService(TweetMetadataDao tweetMetadataDao) {
+        return new TweetMetadataService(tweetMetadataDao);
+    }
+
+    @Provides
+    @Singleton
+    public KafkaTweetsConsumerManager provideKafkaTweetsConsumerManager(TweetService tweetService, TweetMetadataService tweetMetadataService) {
+        return new KafkaTweetsConsumerManager(twitterDataPlaneConfiguration.getKafka().getBootstrapServers(), tweetService, tweetMetadataService);
     }
 }

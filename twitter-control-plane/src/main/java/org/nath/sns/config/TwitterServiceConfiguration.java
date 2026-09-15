@@ -9,4 +9,7 @@ public class TwitterServiceConfiguration extends Configuration {
 
     @JsonProperty("jwt")
     private JwtConfig jwt = new JwtConfig();
+
+    @JsonProperty("kafka")
+    private KafkaConfig kafka = new KafkaConfig();
 }

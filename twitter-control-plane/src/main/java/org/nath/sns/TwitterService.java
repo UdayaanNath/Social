@@ -13,10 +13,12 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.nath.sns.config.TwitterModule;
 import org.nath.sns.config.TwitterServiceConfiguration;
 import org.nath.sns.dto.AuthenticatedUser;
+import org.nath.sns.resource.TweetsResource;
 import org.nath.sns.resource.TwitterServiceHealthResource;
 import org.nath.sns.util.JwtAuthenticatorUtil;
 import org.nath.sns.util.RoleAuthorizerUtil;
 import org.nath.sns.util.UserContextFilter;
+import org.nath.sns.manager.KafkaTweetsProducerManager;
 
 
 public class TwitterService extends Application<TwitterServiceConfiguration>
@@ -32,7 +34,7 @@ public class TwitterService extends Application<TwitterServiceConfiguration>
         );
     }
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         new TwitterService().run(args);
     }
 
@@ -55,7 +57,10 @@ public class TwitterService extends Application<TwitterServiceConfiguration>
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(AuthenticatedUser.class));
         environment.jersey().register(RolesAllowedDynamicFeature.class);
 
+        environment.lifecycle().manage(injector.getInstance(KafkaTweetsProducerManager.class));
+
         environment.jersey().register(injector.getInstance(TwitterServiceHealthResource.class));
+        environment.jersey().register(injector.getInstance(TweetsResource.class));
 
     }
 }
