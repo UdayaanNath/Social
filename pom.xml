@@ -22,12 +22,17 @@
     <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
     <jedis.version>5.1.0</jedis.version>
     <flyway.version>10.5.0</flyway.version>
+    <mongo.version>5.11.0</mongo.version>
+    <kafka.version>4.3.1</kafka.version>
   </properties>
   <modules>
     <module>common</module>
     <module>identity-api-spec</module>
     <module>Identity</module>
     <module>api-gateway</module>
+    <module>twitter-api-spec</module>
+    <module>twitter-data-plane</module>
+    <module>twitter-control-plane</module>
   </modules>
   <dependencies>
     <dependency>
@@ -121,6 +126,18 @@
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-database-postgresql</artifactId>
       <version>${flyway.version}</version>
+    </dependency>
+    <!-- MongoDB Driver -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>${mongo.version}</version>
+    </dependency>
+    <!-- Kafka Client -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka.version}</version>
     </dependency>
   </dependencies>
   <build>

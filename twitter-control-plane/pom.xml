@@ -7,13 +7,11 @@
     <artifactId>Social</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-
   <groupId>org.nath.sns</groupId>
-  <artifactId>identity</artifactId>
+  <artifactId>twitter-control-plane</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>identity</name>
+  <name>twitter-control-plane</name>
   <url>http://maven.apache.org</url>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -23,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>org.nath.sns</groupId>
-      <artifactId>identity-api-spec</artifactId>
+      <artifactId>twitter-api-spec</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Swagger annotations for generated OpenAPI classes -->
@@ -33,13 +31,12 @@
       <version>1.6.14</version>
     </dependency>
     <dependency>
-        <groupId>org.nath.sns</groupId>
-        <artifactId>common</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <scope>compile</scope>
+      <groupId>org.nath.sns</groupId>
+      <artifactId>common</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -69,7 +66,7 @@
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>org.nath.sns.IdentityService</mainClass>
+                  <mainClass>org.nath.sns.TwitterService</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -82,7 +79,7 @@
         <version>3.6.1</version>
         <executions>
           <execution>
-            <id>unpack-identity-api-spec</id>
+            <id>unpack-twitter-api-spec</id>
             <phase>initialize</phase>
             <goals>
               <goal>unpack</goal>
@@ -91,7 +88,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.nath.sns</groupId>
-                  <artifactId>identity-api-spec</artifactId>
+                  <artifactId>twitter-api-spec</artifactId>
                   <version>${project.version}</version>
                   <includes>api.yaml</includes>
                   <outputDirectory>
@@ -120,8 +117,8 @@
               <generatorName>jaxrs-spec</generatorName>
 
               <!-- Where the generated code will live -->
-              <apiPackage>org.nath.sns.identity</apiPackage>
-              <modelPackage>org.nath.sns.identity.model</modelPackage>
+              <apiPackage>org.nath.sns.twitter</apiPackage>
+              <modelPackage>org.nath.sns.twitter.model</modelPackage>
 
               <configOptions>
                 <!-- Generates interfaces instead of full server stubs -->
